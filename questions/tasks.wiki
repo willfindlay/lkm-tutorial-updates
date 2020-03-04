@@ -39,6 +39,7 @@ If your build failed before doing this and again after, delete the downloaded co
 To answer these questions on newgetpid.c, you'll need to refer to the [https://elixir.bootlin.com/linux/latest/source Linux kernel source], particularly [https://elixir.bootlin.com/linux/latest/source/kernel/sys.c kernel/sys.c].  (These are links to a cross-referenced version of the Linux kernel source, a key resource for understanding and developing kernel code.)
 
 # Download the source [http://homeostasis.scs.carleton.ca/~soma/os-2017f/code/lec16/newgetpid.zip newgetpid.c].  Build and run it as before.
+# Run <tt>trace -K '::__task_pid_nr_ns(struct task_struct *task, enum pid_type type, struct pid_namespace *ns) (STRCMP("cat", (uintptr_t)task->comm))'</tt> to get a kernel stack trace every time the process <tt>cat</tt> causes a call to <tt>__task_pid_nr_ns</tt>. Run <tt>cat /dev/newgetpid</tt>. Note that the three stack traces that are produced each look very different. One of them is a result of <tt>cat</tt> reading from the device to get its pid. How can you tell which one? What seems to be causing the other two?
 # What type is "current"?  How can you figure this out?
 # Modify newgetpid.c so that it creates a device file /dev/describe rather than /dev/newgetpid.
 # Make /dev/describe output the calling process's parent ID (ppid), user ID (uid), group ID (gid), effective user ID (euid), and effective group ID (egid).
