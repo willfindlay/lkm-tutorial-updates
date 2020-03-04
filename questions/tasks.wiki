@@ -1,0 +1,45 @@
+=Linux kernel modules=
+
+In this part of the tutorial you will be building and installing kernel modules.  You will need root access to install kernel modules.
+
+It is '''highly recommended''' that you use a comp3000 openstack instance for the exercises below for two reasons.  First, you may have difficulties compiling kernel modules on other systems.  Second, these operations are potentially dangerous and mistakes could '''destroy all data''' on the Linux system.  Consider yourself warned!
+
+This is the first tutorial where you are seeing kernel code.  By the end of tutorial you should be able to run all of the code here and be able to make trivial modifications.  Lectures later this week will go through this code in detail.  Learning as much as you can about the code now will help you prepare for the upcoming lectures.  In particular, try to figure out what is different about this code.
+
+'''If you cannot build a module''' you may have installed a version of Ubuntu that is too minimal.  But you can fix it by installing the right packages.  Do the following:
+  sudo apt update
+  sudo apt dist-upgrade
+  sudo apt install build-essential
+  sudo apt clean
+When upgrading you may get a message when upgrading grub about which boot device to use.  Select /dev/vda or /dev/sda - don’t select the devices that end with a number.
+
+If your build failed before doing this and again after, delete the downloaded code and unpack the zip file again.  (The build process generates hidden files which can mess up later builds.)
+
+==A simple kernel module==
+
+# Download the source for [http://homeostasis.scs.carleton.ca/~soma/os-2015f/code/simple.zip this simple module], unpack, and build it by typing "make". Use <code>wget</code> to download the zip file.
+# Install the module using "sudo insmod simple.ko".  The hello message is recorded in the kernel logs.  How do you view the kernel logs?
+# Check to see that the module has been loaded.  How do you do this?
+# Remove the module from the kernel.  What did you do?
+
+==A character device kernel module==
+
+# Download the source for [http://homeostasis.scs.carleton.ca/~soma/os-2015f/code/ones.zip ones], a kernel module implementing a character device that ouputs an unbounded string of "1"'s.  Build, compile, and run it as before.
+# What kernel messages does the module generate?  Does it create any new files (other than /dev/ones)?  If so, where?
+# What happens when you "cat" the device /dev/ones?  How can you limit the output?
+# How can you modify your module to generate a kernel "Oops" as reported in the kernel logs or outright crash the kernel?
+
+==Listing processes from a module==
+
+To answer these questions on newgetpid.c, you'll need to refer to the [https://elixir.bootlin.com/linux/latest/source Linux kernel source], particularly [https://elixir.bootlin.com/linux/latest/source/kernel/sys.c kernel/sys.c].  (These are links to a cross-referenced version of the Linux kernel source, a key resource for understanding and developing kernel code.)
+
+# Download the source [http://homeostasis.scs.carleton.ca/~soma/os-2017f/code/lec16/newgetpid.zip newgetpid.c].  Build and run it as before.
+# What type is "current"?  How can you figure this out?
+# Modify newgetpid.c so that it creates a device file /dev/describe rather than /dev/newgetpid.
+# Make /dev/describe output the calling process's parent ID (ppid), user ID (uid), group ID (gid), effective user ID (euid), and effective group ID (egid).
+# '''(Advanced)''' Modify /dev/describe so that if you write a process ID to it, it will output the information on the provided process.  To make this work, you'll need to:
+#* Add a write method by adding a write operation to the file operations struct. Write operations have the same prototype as read operations, except the buffer is marked constant (because it shouldn't be modified).
+#* Convert the written text to an integer and store in a global variable (to the module).
+#* Find the right task struct.  See the implementation of the [http://elixir.free-electrons.com/linux/v4.4.83/source/kernel/signal.c#L2855 kill system call], and how it [http://elixir.free-electrons.com/linux/v4.4.83/source/kernel/signal.c#L1388 looks up the pid struct] and then [http://elixir.free-electrons.com/linux/v4.4.83/source/kernel/signal.c#L1303 gets the right task struct using that pid struct].
+#* After returning info on the selected process, further calls should return info on the current process.  You can do this by setting the global process ID to 0 and checking this value, using the current task if it is zero.
+
