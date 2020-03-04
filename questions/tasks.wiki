@@ -31,7 +31,7 @@ If your build failed before doing this and again after, delete the downloaded co
 # What happens when you "cat" the device /dev/ones?  How can you limit the output?
 # While running <tt>cat /dev/ones</tt> in on terminal, run <tt>trace -p `pidof cat` -K -M 10 '__put_user_1 printf "writing %c to 0x%lx" arg1, arg2'</tt> to trace the first 10 calls to <tt>put_user</tt> and print the kernel stack trace, along with the userspace address that <tt>/dev/ones</tt> is writing to. Consider the following:
 #* What kernel functions are being called that result in <tt>put_user</tt> being invoked?
-#* How much is the userspace address being written to incrementing on each <tt>put_user</tt> call? Does this increase make sense? Why?
+#* How much is the userspace address incrementing on each <tt>put_user</tt> call? Does this increase make sense? Why?
 # How can you modify your module to generate a kernel "Oops" as reported in the kernel logs or outright crash the kernel?
 
 ==Listing processes from a module==
